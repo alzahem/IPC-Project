@@ -1,6 +1,6 @@
 
 351-03 
-Program written in C++
+## Program written in C++
 
 # Group Members:
     Kevin Espinoza -- k.espinoza1012@csu.fullerton.edu
