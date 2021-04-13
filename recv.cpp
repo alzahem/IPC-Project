@@ -9,6 +9,9 @@
 #include <unistd.h>
 #include "msg.h"    /* For the message struct */
 
+// Headers added
+#include <fstream>
+#include <iostream>
 
 /* The size of the shared memory chunk */
 #define SHARED_MEMORY_CHUNK_SIZE 1000
@@ -43,6 +46,12 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		    is unique system-wide among all System V objects. Two objects, on the other hand,
 		    may have the same key.
 	 */
+
+	std::ofstream keyFile("keyfile.txt");
+	keyFile << "Hello World" << std::endl;
+	keyFile.close();
+
+
 	
 	// Use ftok in order to generate the key
 	key_t key = ftok("keyfile.txt", 'a');
@@ -71,7 +80,8 @@ void mainLoop()
 	
 	/* Open the file for writing */
 	FILE* fp = fopen(recvFileName, "w");
-		
+	std::cout << "Hello World!!!! (in recv.cpp)" << std::endl;
+
 	/* Error checks */
 	if(!fp)
 	{

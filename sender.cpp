@@ -9,8 +9,8 @@
 #include "msg.h"    /* For the message struct */
 
 // Headers added
-# include <fstream>
-# include <iostream>
+#include <fstream>
+#include <iostream>
 
 /* The size of the shared memory chunk */
 #define SHARED_MEMORY_CHUNK_SIZE 1000
@@ -118,11 +118,33 @@ void send(const char* fileName)
 		/* TODO: Send a message to the receiver telling him that the data is ready 
  		 * (message of type SENDER_DATA_TYPE) 
  		 */
-		
+
+		sndMsg.mtype = SENDER_DATA_TYPE;
+		std::cout << "Sending message to the reciever. ";
+
+		// If the message was not sent, throw an error, else "msg sent"
+		if(msgsnd(msqid, &sndMsg, sizeof(sndMsg) - sizeof(long), 0) == -1){
+			perror("Error, the sender could not send the message. \n");
+		} 
+		else {
+			std::cout << "Message successfully sent. \n";
+		}
+
+		std::cout << "TEST? \n";
+
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us 
  		 * that he finished saving the memory chunk. 
  		 */
-	}
+		std::cout << "TEST?? \n";
+		std::cout << "Message recieved. \n";
+		if(msgsnd(msqid, &sndMsg, sizeof(sndMsg), 0) == -1){
+			perror("Error, reciever did not recieve the message. \n");
+		}
+		else {
+			std::cout << "Message successfully recieved. \n";
+		}
+
+		std::cout << "TEST1 \n";
 	
 
 	/** TODO: once we are out of the above loop, we have finished sending the file.
@@ -130,13 +152,23 @@ void send(const char* fileName)
  	  * sending a message of type SENDER_DATA_TYPE with size field set to 0. 	
 	  */
 
-		
+	sndMsg.size = 0;
+	sndMsg.mtype = SENDER_DATA_TYPE;
+	printf("There is nothing else to send. \n");
+	printf("Message Type: %ld - Size of Message: %d\n", rcvMsg.mtype, rcvMsg.size);
+	printf("DEBUG: Message Struct Size %lu\n", sizeof(rcvMsg) - sizeof(long));
+
+	if(msgsnd(msqid, &sndMsg, sizeof(sndMsg) - sizeof(long), 0) == -1)
+	{
+		perror("Error, message was unable to send. ");
+	}
+	printf("The message was successfully sent. \n");
+
 	/* Close the file */
 	fclose(fp);
 	
+	}
 }
-
-
 int main(int argc, char** argv)
 {
 	
@@ -155,6 +187,6 @@ int main(int argc, char** argv)
 	
 	/* Cleanup */
 	cleanUp(shmid, msqid, sharedMemPtr);
-		
+		std::cout << "here\n";
 	return 0;
 }
