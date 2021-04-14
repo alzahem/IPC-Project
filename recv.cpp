@@ -100,6 +100,10 @@ void mainLoop()
      * "recvfile"
      */
 
+	message sndMsg;
+	message rcvMsg;
+	msgSize = 1;
+
 	/* Keep receiving until the sender set the size to 0, indicating that
  	 * there is no more data to send
  	 */	
@@ -119,6 +123,15 @@ void mainLoop()
  			 * I.e. send a message of type RECV_DONE_TYPE (the value of size field
  			 * does not matter in this case). 
  			 */
+			sndMsg.mtype = RECV_DONE_TYPE;
+			sndMsg.size = 0;
+			std::cout << "Sending empty message. \n";
+			if(msgsnd(msqid, &sndMsg, 0, 0) == -1)
+			{
+				perror("Error, empty message was unable to be sent. /n");
+			}
+			printf("The message was successfully sent. \n");
+
 		}
 		/* We are done */
 		else
@@ -141,10 +154,17 @@ void mainLoop()
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 {
 	/* TODO: Detach from shared memory */
-	
+	shmdt(sharedMemPtr);
+	std::cout << "The pointer was successfully detached from shared memory. /n";
+
 	/* TODO: Deallocate the shared memory chunk */
+	shmctl(shmid, IPC_RMID, NULL);
+	std::cout << "Shared memory has been successfully deallocated. \n";
 	
 	/* TODO: Deallocate the message queue */
+	msgctl(msqid, IPC_RMID, NULL);
+	std::cout << "The message queue has been successfully deallocated.\n";
+
 }
 
 /**
@@ -166,7 +186,8 @@ int main(int argc, char** argv)
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
  	 */
-				
+	signal(SIGINT, ctrlCSignal);
+
 	/* Initialize */
 	init(shmid, msqid, sharedMemPtr);
 	
@@ -174,6 +195,7 @@ int main(int argc, char** argv)
 	mainLoop();
 
 	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/
+	cleanUp(shmid, msqid, sharedMemPtr);
 		
 	return 0;
 }
