@@ -41,7 +41,6 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		4. Delete all TODOs when program is fully working and beautify code. 
 	 */
 
-	
 
 	// Use ftok in order to generate the key
 	key_t key = ftok("keyfile.txt", 'a');
@@ -115,26 +114,26 @@ void send(const char* fileName)
  		 */
 
 		sndMsg.mtype = SENDER_DATA_TYPE;
-		std::cout << "Sending message to the reciever. ";
+		std::cout << "\nSending message to the reciever. ";
 
 		// If the message was not sent, throw an error, else "msg sent"
 		if(msgsnd(msqid, &sndMsg, sizeof(sndMsg) - sizeof(long), 0) == -1){
 			perror("Error, the sender could not send the message. \n");
 		} 
 		else {
-			std::cout << "Message successfully sent. \n";
+			std::cout << "Message successfully sent. \n\n";
 		}
 
 
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us 
  		 * that he finished saving the memory chunk. 
  		 */
-		std::cout << "Message recieved. \n";
+		std::cout << "\nMessage recieved. \n";
 		if(msgsnd(msqid, &sndMsg, sizeof(sndMsg), 0) == -1){
 			perror("Error, reciever did not recieve the message. \n");
 		}
 		else {
-			std::cout << "Message successfully recieved. \n";
+			std::cout << "Message successfully recieved. \n\n";
 		}
 
 	
@@ -146,7 +145,7 @@ void send(const char* fileName)
 
 	sndMsg.size = 0;
 	sndMsg.mtype = SENDER_DATA_TYPE;
-	printf("There is nothing else to send. \n");
+	printf("\nThere is nothing else to send. \n");
 	printf("Message Type: %ld - Size of Message: %d\n", rcvMsg.mtype, rcvMsg.size);
 	printf("DEBUG: Message Struct Size %lu\n", sizeof(rcvMsg) - sizeof(long));
 
@@ -179,10 +178,9 @@ int main(int argc, char** argv)
 	
 	/* Cleanup */
 	cleanUp(shmid, msqid, sharedMemPtr);
-		std::cout << "here\n";
 
 
-	std::cout << "END OF SENDER_CPP";
+	std::cout << "\n\nEND OF SENDER_CPP\n\n";
 
 	return 0;
 }
