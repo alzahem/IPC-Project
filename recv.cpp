@@ -10,7 +10,6 @@
 #include "msg.h"    /* For the message struct */
 
 // Headers added
-#include <fstream>
 #include <iostream>
 
 /* The size of the shared memory chunk */
@@ -47,10 +46,8 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		    may have the same key.
 	 */
 
-	std::ofstream keyFile("keyfile.txt");
-	keyFile << "Hello World" << std::endl;
-	keyFile.close();
-
+	std::cout << "\n===========================================\n";
+	std::cout << "START OF RECV_CPP\n\n";
 
 	
 	// Use ftok in order to generate the key
@@ -80,7 +77,6 @@ void mainLoop()
 	
 	/* Open the file for writing */
 	FILE* fp = fopen(recvFileName, "w");
-	std::cout << "Hello World!!!! (in recv.cpp)" << std::endl;
 
 	/* Error checks */
 	if(!fp)
@@ -125,13 +121,14 @@ void mainLoop()
  			 */
 			sndMsg.mtype = RECV_DONE_TYPE;
 			sndMsg.size = 0;
-			std::cout << "Sending empty message. \n";
+			// std::cout << "Sending empty message. \n";
 			if(msgsnd(msqid, &sndMsg, 0, 0) == -1)
 			{
 				perror("Error, empty message was unable to be sent. /n");
 			}
 			printf("The message was successfully sent. \n");
 
+		--msgSize;
 		}
 		/* We are done */
 		else
@@ -155,7 +152,7 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 {
 	/* TODO: Detach from shared memory */
 	shmdt(sharedMemPtr);
-	std::cout << "The pointer was successfully detached from shared memory. /n";
+	std::cout << "The pointer was successfully detached from shared memory. \n";
 
 	/* TODO: Deallocate the shared memory chunk */
 	shmctl(shmid, IPC_RMID, NULL);
@@ -197,5 +194,8 @@ int main(int argc, char** argv)
 	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/
 	cleanUp(shmid, msqid, sharedMemPtr);
 		
+
+	std::cout << "\nEND OF RECV_CPP\n";
+
 	return 0;
 }
