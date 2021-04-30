@@ -39,16 +39,13 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	/* TODO: Use ftok("keyfile.txt", 'a') in order to generate the key. */
 	key_t key = ftok("keyfile.txt", 'a');
 
-
 	/* TODO: Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
 	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT);
 	std::cout << "Memory allocated successfully.\n";
 
-
 	/* TODO: Attach to the shared memory */
 	sharedMemPtr = shmat(shmid, (void *)0, 0);
 	std::cout << "Attached to shared memory successfully.\n";
-
 
 	/* TODO: Attach to the message queue */
   msqid = msgget(key, 0666 | IPC_CREAT);
@@ -99,8 +96,8 @@ void send(const char* fileName)
 	/* Read the whole file */
 	while(!feof(fp))
 	{
-		/* Read at most SHARED_MEMORY_CHUNK_SIZE from the file and store them in shared 		memory.
- 		 * fread will return how many bytes it has actually read (since the last chunk 			may be less
+		/* Read at most SHARED_MEMORY_CHUNK_SIZE from the file and store them in shared memory.
+ 		 * fread will return how many bytes it has actually read (since the last chunk may be less
  		 * than SHARED_MEMORY_CHUNK_SIZE).
  		 */
 		if((sndMsg.size = fread(sharedMemPtr, sizeof(char), SHARED_MEMORY_CHUNK_SIZE, fp)) < 0)
@@ -120,10 +117,9 @@ void send(const char* fileName)
 
 
 
-		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE 			telling us
- 		 * that he finished saving the memory chunk.
+		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE
+		 * telling us that he finished saving the memory chunk.
  		 */
-
 		if(msgrcv(msqid, &rcvMsg, 0, RECV_DONE_TYPE, 0)) {
 			exit(1);
 		}
@@ -158,7 +154,7 @@ int main(int argc, char** argv)
 	/* Check the command line arguments */
 	if(argc < 2)
 	{
-		std::cout << stderr, "USAGE: %s <FILE NAME>\n", argv[0];
+		fprintf(stderr, "USAGE: %s <FILE NAME>\n", argv[0]);
 		exit(-1);
 	}
 

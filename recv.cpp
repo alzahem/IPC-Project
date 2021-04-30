@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include "msg.h"    /* For the message struct */
 
+#include <iostream>
+
 /* The size of the shared memory chunk */
 #define SHARED_MEMORY_CHUNK_SIZE 1000
 
@@ -18,7 +20,8 @@ void *sharedMemPtr;
 /* The name of the received file */
 const char recvFileName[] = "recvfile";
 
-message sndMsg, rcvMsg;   // !
+message sndMsg;
+message rcvMsg;
 
 /**
  * Sets up the shared memory segment and message queue
@@ -40,21 +43,22 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		    may have the same key.
 	 */
 
-	key_t key = ftok("keyfile.txt", 'a');
+	/* TODO: Use ftok("keyfile.txt", 'a') in order to generate the key. */
+ 	key_t key = ftok("keyfile.txt", 'a');
 
-	/* TODO: Allocate a piece of shared memory. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE. */
-	printf("Allocating piece of shared memory\n");
-	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE ,0666 | IPC_CREAT);
+ 	/* TODO: Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
+ 	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT);
+ 	std::cout << "Memory allocated successfully.\n";
 
-	/* TODO: Attach to the shared memory */
-	printf("Attaching to shared memory\n");
-	sharedMemPtr = shmat(shmid,(void*)0,0);
+ 	/* TODO: Attach to the shared memory */
+ 	sharedMemPtr = shmat(shmid, (void *)0, 0);
+ 	std::cout << "Attached to shared memory successfully.\n";
 
-	/* TODO: Create a message queue */
-	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
-	printf("Creating message queue...");
-	msqid = msgget(key, 0666 | IPC_CREAT);
+ 	/* TODO: Attach to the message queue */
+  msqid = msgget(key, 0666 | IPC_CREAT);
+  std::cout << "Attached to message queue successfully.\n\n";
 
+ 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
 }
 
 
@@ -64,7 +68,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 void mainLoop()
 {
 	/* The size of the mesage */
-	int msgSize = 1; //switched to one to initialize
+	int msgSize = 1;
 
 	/* Open the file for writing */
 	FILE* fp = fopen(recvFileName, "w");
@@ -91,23 +95,12 @@ void mainLoop()
  	 * there is no more data to send
  	 */
 
-	//msgSize++; // ! (remove?)
-
 	while(msgSize != 0)
 	{
-		printf("Reading new message\n");
-		msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), SENDER_DATA_TYPE, 0); // check later
+		std::cout << "New message read in.\n";
+		msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), SENDER_DATA_TYPE, 0);
 
-		// if(msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), SENDER_DATA_TYPE, 0) == -1)
-		// {
-		// 	perror("msgrcv");
-		// 	exit(1);
-		// }else{
-		// 	printf("Read successfully!\n");
-		// }
-
-		msgSize = rcvMsg.size; // could change
-
+		msgSize = rcvMsg.size;
 
 		/* If the sender is not telling us that we are done, then get to work */
 		if(msgSize != 0)
@@ -123,25 +116,20 @@ void mainLoop()
  			 * does not matter in this case).
  			 */
 
- 			printf("Ready for next file chunk\n");
-
+			std::cout << "Standing by for subsequent file chunk.\n";
  			sndMsg.mtype = RECV_DONE_TYPE;
-			sndMsg.size = 0;
 
-			printf("Sending empty message\n");
-			if(msgsnd(msqid, &sndMsg, 0, 0) == -1)
-			{
-				perror("msgsnd");
-			}else{
-				printf("Message sent successfully!\n");
-			}
+			std::cout << "Message sent to shared memory.\n";
+			msgsnd(msqid, &sndMsg, 0, 0);
+
+			std::cout << "Message successfully sent.\n";
 		}
 		/* We are done */
 		else
 		{
 			/* Close the file */
 			fclose(fp);
-			printf("File closed.\n\n");
+			std::cout << "File successfly closed.\n\n";
 		}
 	}
 }
@@ -158,30 +146,22 @@ void mainLoop()
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 {
 	/* TODO: Detach from shared memory **/
-	printf("Dettaching from shared memory\n");
-	if(shmdt(sharedMemPtr) == -1){
-	    perror("dettach");
-	    exit(1);
-    	}
-    	printf("Dettaching successfully!\n");
+	shmdt(sharedMemPtr);
+	std::cout << "Message detached from shared memory successfully\n";
 
 	/* TODO: Deallocate the shared memory chunk **/
-	printf("Deallocating the shared memory chunk\n");
-	if(shmctl(shmid, IPC_RMID, NULL) == -1){
-	    perror("shmctl");
-	    exit(1);
-	}else{
-		printf("Deallocation successfully!\n");
-	}
+	// 	shmctl(): when you detach from shared memory,it is not destroyed. So, to destroy
+	// shmctl() is used. shmctl(int shmid,IPC_RMID,NULL);
+  // destroy the shared memory
+	shmctl(shmid, IPC_RMID, NULL);
+  std::cout << "Shared memory chunk deallocated";
 
 	/* TODO: Deallocate the message queue **/
-	printf("Deallocating the message queue\n");
-   	 if(msgctl( msqid, IPC_RMID, NULL) == -1){
-        perror("msgctl");
-        exit(1);
-    	}else{
-    		printf("Deallocation successfully!\n");
-	}
+	std::cout << "Deallocating the message queue";
+	msgctl( msqid, IPC_RMID, NULL);
+	// to destroy the message queues
+	//msgctl(): It performs various operations on a queue. Generally it is use to destroy message queue.
+	std::cout << "Message queue succesfully deallocated";
 }
 
 /**
@@ -191,24 +171,19 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 
 void ctrlCSignal(int signal)
 {
-
 	/* Free system V resources */
 	cleanUp(shmid, msqid, sharedMemPtr);
-	printf("Ctrl C pressed, cleaning up and exiting the program\n");
-    	/*Exit the program*/
-
+	std::cout << "Program cleaned up.";
 }
 
 int main(int argc, char** argv)
 {
-
 	/* TODO: Install a singnal handler (see signaldemo.cpp sample file).
  	 * In a case user presses Ctrl-c your program should delete message
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
  	 */
-
-    	signal(SIGINT,ctrlCSignal);
+  signal(SIGINT,ctrlCSignal);
 
 	/* Initialize */
 	init(shmid, msqid, sharedMemPtr);
@@ -218,9 +193,8 @@ int main(int argc, char** argv)
 
 	/**! TODO: Detach from shared memory segment, and deallocate shared memory and message 		queue (i.e. call cleanup) **/
 
-    	cleanUp(shmid, msqid, sharedMemPtr);
-
-	printf("Program completed!\n");
+  cleanUp(shmid, msqid, sharedMemPtr);
+	std::cout << "All done, time to celebrate.";
 
 	return 0;
 }
