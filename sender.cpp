@@ -9,7 +9,6 @@
 #include "msg.h"    /* For the message struct */
 
 // Headers added
-#include <fstream>
 #include <iostream>
 
 /* The size of the shared memory chunk */
@@ -42,11 +41,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		4. Delete all TODOs when program is fully working and beautify code. 
 	 */
 
-	// Create a file called keyfile.txt containing string "Hello world"
-	// TODO: invoke sender as `./sender file.txt` to make code cleaner
-	std::ofstream keyFile("keyfile.txt");
-	keyFile << "Hello world";	
-	keyFile.close();
+	
 
 	// Use ftok in order to generate the key
 	key_t key = ftok("keyfile.txt", 'a');
@@ -130,12 +125,10 @@ void send(const char* fileName)
 			std::cout << "Message successfully sent. \n";
 		}
 
-		std::cout << "TEST? \n";
 
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us 
  		 * that he finished saving the memory chunk. 
  		 */
-		std::cout << "TEST?? \n";
 		std::cout << "Message recieved. \n";
 		if(msgsnd(msqid, &sndMsg, sizeof(sndMsg), 0) == -1){
 			perror("Error, reciever did not recieve the message. \n");
@@ -144,7 +137,6 @@ void send(const char* fileName)
 			std::cout << "Message successfully recieved. \n";
 		}
 
-		std::cout << "TEST1 \n";
 	
 
 	/** TODO: once we are out of the above loop, we have finished sending the file.
@@ -188,5 +180,9 @@ int main(int argc, char** argv)
 	/* Cleanup */
 	cleanUp(shmid, msqid, sharedMemPtr);
 		std::cout << "here\n";
+
+
+	std::cout << "END OF SENDER_CPP";
+
 	return 0;
 }
