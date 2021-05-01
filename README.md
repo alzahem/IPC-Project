@@ -1,5 +1,5 @@
 
-351-03
+351-03, Spring 2021
 ## Program written in C++
 
 # Group Members:
@@ -16,9 +16,8 @@ How to execute your program:
     The terminal should now display the following output as it waits for sender to send a message:
 
 
-    Then run `make` in a a separate terminal while accessing the location of this project file directory.
-    Run `./sender keyfile.txt` in that same terminal.
-    That terminal will now diplay the following:
+    Then run `./sender keyfile.txt` in a a separate terminal while accessing the location of this project file directory.
+    That terminal will now display the following:
 
 
     The terminal where `./recv` was run should now display the following:

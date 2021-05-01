@@ -154,14 +154,14 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 	// shmctl() is used. shmctl(int shmid,IPC_RMID,NULL);
   // destroy the shared memory
 	shmctl(shmid, IPC_RMID, NULL);
-  std::cout << "Shared memory chunk deallocated";
+  std::cout << "Shared memory chunk deallocated\n";
 
 	/* TODO: Deallocate the message queue **/
-	std::cout << "Deallocating the message queue";
+	std::cout << "Deallocating the message queue\n";
 	msgctl( msqid, IPC_RMID, NULL);
 	// to destroy the message queues
 	//msgctl(): It performs various operations on a queue. Generally it is use to destroy message queue.
-	std::cout << "Message queue succesfully deallocated";
+	std::cout << "Message queue succesfully deallocated\n\n";
 }
 
 /**
@@ -173,7 +173,7 @@ void ctrlCSignal(int signal)
 {
 	/* Free system V resources */
 	cleanUp(shmid, msqid, sharedMemPtr);
-	std::cout << "Program cleaned up.";
+	std::cout << "Program cleaned up.\n\n";
 }
 
 int main(int argc, char** argv)
@@ -194,7 +194,7 @@ int main(int argc, char** argv)
 	/**! TODO: Detach from shared memory segment, and deallocate shared memory and message 		queue (i.e. call cleanup) **/
 
   cleanUp(shmid, msqid, sharedMemPtr);
-	std::cout << "All done, time to celebrate.";
+	std::cout << "All done, time to celebrate.\n\n";
 
 	return 0;
 }
