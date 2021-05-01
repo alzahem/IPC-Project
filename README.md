@@ -33,5 +33,5 @@ __Our team did not complete the extra credit.__
 ## Anything special about your submission that we should take note of: ##
 __Nothing special to note.__
 
-Markup : [Return to top](#Group Members)
-          section_title<a name="section_name"></a>    
+Markup : [Return to top](#Group_Members)
+          
