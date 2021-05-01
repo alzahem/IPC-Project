@@ -23,7 +23,7 @@ How to execute your program:
 #### The terminal where `./recv` was run should now display the following: ####
 ![image](https://user-images.githubusercontent.com/37064367/116765062-3872a680-a9d8-11eb-841c-f7a5cd3f6e6a.png)
 
-The contents of the file sent as a message from `keyfile.txt` will then be copied into `recv`
+The contents of the file sent as a message from `keyfile.txt` will then be copied into `recv`.
 5. Run `make clean` in the terminal to remove .o files created by `make`. (optional)
 
 ## Whether you implemented the extra credit: ##
