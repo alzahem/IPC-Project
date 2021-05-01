@@ -1,8 +1,8 @@
 
+# Welcome
+
 351-03, Spring 2021
 ## Program written in C++
-
-# Welcome
 
 # Group Members:
     Kevin Espinoza -- k.espinoza1012@csu.fullerton.edu
