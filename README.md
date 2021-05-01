@@ -35,5 +35,5 @@ __Our team did not complete the extra credit.__
 ## Anything special about your submission that we should take note of: ##
 __Nothing special to note.__
 
-[Return to top](#Program-written-in-C++)
+[Return to top](#Group-Members:)
           
